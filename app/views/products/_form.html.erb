@@ -36,6 +36,11 @@
     <%= form.select :category_id, options_from_collection_for_select(Category.all, 'id', 'name'), class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full bg-gray-100", include_blank: true %>
   </div>
 
+  <div class="my-5">
+  <%= form.label :on_sale, "On Sale" %>
+  <%= form.check_box :on_sale, class: "rounded-md" %>
+</div>
+
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
   </div>

@@ -7,6 +7,14 @@
 
   <% content_for :title, "The Best Products" %>
 
+  <!-- Filter Dropdown -->
+<div class="mb-4 flex justify-end">
+  <%= form_with url: products_path, method: :get, class: 'flex items-center' do |f| %>
+    <%= f.select :filter, options_for_select([['On Sale', 'on_sale'], ['New Products', 'new_products'], ['Recently Updated', 'recently_updated']]), { include_blank: 'Select Filter' }, { class: 'p-2 border rounded-md' } %>
+    <%= f.submit 'Apply Filter', class: 'ml-2 p-2 bg-blue-500 text-white rounded-md' %>
+  <% end %>
+</div>
+
   <!-- Centering the Heading -->
   <div class="flex justify-center items-center mb-6">
     <h1 class="font-bold text-4xl text-center font-brokenbrush">The Best Products</h1>

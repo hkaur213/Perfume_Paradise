@@ -5,7 +5,16 @@ class ProductsController < ApplicationController
   # GET /products or /products.json
   def index
     @products = Product.all
-  end
+  
+    # Apply filter based on params
+    if params[:filter] == 'on_sale'
+      @products = @products.where(on_sale: true)
+    elsif params[:filter] == 'new_products'
+      @products = @products.where('created_at >= ?', 3.days.ago)
+    elsif params[:filter] == 'recently_updated'
+      @products = @products.where('updated_at >= ?', 3.days.ago)
+    end
+  end  
 
   # GET /products/1 or /products/1.json
   def show
@@ -66,6 +75,6 @@ class ProductsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def product_params
-      params.require(:product).permit(:name, :description, :price, :category_id, images: [])
+      params.require(:product).permit(:name, :description, :price, :category_id, :on_sale, images: [])
     end
 end
