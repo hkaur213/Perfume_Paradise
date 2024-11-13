@@ -4,6 +4,9 @@ source "https://rubygems.org"
 gem "rails", "~> 7.2.2"
 gem "faker"
 gem "httparty"
+gem 'kaminari'
+gem 'kaminari-bootstrap'
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 # Use postgresql as the database for Active Record

@@ -26,5 +26,19 @@
   }
 
 }
+.pagination {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.125rem; /* Larger text */
+}
+.pagination li {
+  margin-right: 10px; /* Adds space between pagination numbers */
+}
+
+.pagination li:last-child {
+  margin-right: 0; /* Removes margin from the last pagination item */
+}
+
 
 @import 'actiontext.css';

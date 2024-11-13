@@ -14,6 +14,9 @@ class ProductsController < ApplicationController
     elsif params[:filter] == 'recently_updated'
       @products = @products.where('updated_at >= ?', 3.days.ago)
     end
+
+    # Paginate Results 
+    @products = @products.page(params[:page]).per(10)
   end  
 
   # GET /products/1 or /products/1.json
