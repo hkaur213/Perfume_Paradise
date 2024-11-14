@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
 
   # GET /products or /products.json
   def index
+    @categories = Category.all
     @products = Product.all
   
     # Apply filter based on params
@@ -14,6 +15,15 @@ class ProductsController < ApplicationController
     elsif params[:filter] == 'recently_updated'
       @products = @products.where('updated_at >= ?', 3.days.ago)
     end
+
+     # Apply search filter using pg_search_scope
+  if params[:search].present?
+    @products = Product.search_by_name_and_description(params[:search])
+  end
+
+  if params[:category_id].present?
+    @products = @products.where(category_id: params[:category_id])
+  end
 
     # Paginate Results 
     @products = @products.page(params[:page]).per(10)
