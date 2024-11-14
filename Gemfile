@@ -6,6 +6,7 @@ gem "faker"
 gem "httparty"
 gem 'kaminari'
 gem 'kaminari-bootstrap'
+gem 'pg_search'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

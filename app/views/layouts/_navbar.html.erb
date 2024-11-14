@@ -5,6 +5,7 @@
       <span class="text-2xl text-gray-100"> Perfume Paradise </span>
     <% end %>
 
+    <!-- Navigation Links -->
     <nav class="flex gap-6 text-gray-100">
       <%= link_to "Home", root_path, class: "hover:text-white" %>
       <%= link_to "About", about_path, class: "hover:text-white" %>
@@ -12,6 +13,14 @@
       <%= link_to "Categories", categories_path, class: "hover:text-white" %>
     </nav>
 
+    <!-- Search Form -->
+    <%= form_with url: products_path, method: :get, class: 'flex items-center' do |f| %>
+      <%= f.text_field :search, value: params[:search], placeholder: "Search products", class: 'p-2 rounded-md text-gray-700' %>
+      <%= f.select :category_id, options_for_select(Category.all.map { |c| [c.name, c.id] }, params[:category_id]), include_blank: "All Categories", class: 'ml-2 p-2 rounded-md text-gray-700' %>
+      <%= f.submit 'Search', class: 'ml-2 p-2 bg-blue-500 text-white rounded-md' %>
+    <% end %>
+
+    <!-- Cart Link -->
     <%= link_to cart_path(@current_cart.secret_id) do %>
       <%= render "layouts/cart", cart: @current_cart %>
     <% end %>
