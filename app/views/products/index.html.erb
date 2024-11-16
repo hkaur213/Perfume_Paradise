@@ -30,7 +30,10 @@
   <%= paginate @products %>
 
 
-  <div class="mt-4 w-full">
-    <%= link_to "Create New Product", new_product_path, class: "rounded-lg py-3 px-5 bg-blue-500 text-white text-2xl font-semibold" %>
+  <% if current_admin %>
+  <div class="mt-4 w-full flex justify-center items-center">
+    <%= link_to "Create New Product", new_product_path, class: "rounded-lg py-3 px-5 bg-blue-500 text-white text-2xl font-semibold inline-block" %>
   </div>
+<% end %>
+
 </div>
