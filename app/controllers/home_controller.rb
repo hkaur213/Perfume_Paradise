@@ -4,7 +4,7 @@ class HomeController < ApplicationController
     end
   
     def about
-      # Add any logic needed for the About page
+      @about_page = Page.find_by(title: "About Us")
     end
   end
   

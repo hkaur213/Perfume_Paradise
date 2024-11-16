@@ -11,16 +11,22 @@
 
     <%= link_to "Checkout Now", checkout_cart_path(@current_cart.secret_id), class: "rounded-lg font-semibold p-4 text-center text-xl bg-yellow-400 hover:bg-yellow-500" %>
   </div>
-
-  <br/>
   
+  <br/>
+
   <div id="products" class="min-w-full grid md:grid-cols-4 gap-8">
-    <% @current_cart.products.each do |product| %>
+    <% @current_cart.cart_items.each do |item| %>
       <div>
-        <%= render "products/product", product: product %>
-        <br/>
-        <%= link_to "Remove from cart", cart_path(@current_cart.secret_id, product_id: product.id), class: "p-2 rounded-lg bg-indigo-500 text-indigo-100",
-            data: { turbo_method: "delete" } %>
+        <%= render "products/product", product: item.product %>
+        
+        <!-- Quantity input -->
+        <%= form_with url: update_cart_item_path(item), method: :patch, local: true do |f| %>
+          <%= f.text_field :quantity, value: item.quantity, class: 'quantity-input' %>
+          <%= f.submit 'Update Quantity', class: 'update-btn' %>
+        <% end %>
+
+        <!-- Remove from cart button -->
+        <%= link_to "Remove from cart", cart_path(@current_cart.secret_id, product_id: item.product.id), method: :delete, class: "p-2 rounded-lg bg-indigo-500 text-indigo-100" %>
       </div>
     <% end %>
   </div>
