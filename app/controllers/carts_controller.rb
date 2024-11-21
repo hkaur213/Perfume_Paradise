@@ -49,23 +49,10 @@ class CartsController < ApplicationController
       @purchased_cart = Cart.find_by_secret_id(params[:id])
       redirect_to root_path if !@purchased_cart
     end
-
-    def update_cart_item
-      @cart_item = @current_cart.cart_items.find(params[:id])
-      
-      if @cart_item.update(cart_item_params)
-        redirect_to cart_path(@current_cart), notice: "Item quantity updated"
-      else
-        redirect_to cart_path(@current_cart), alert: "Failed to update item"
-      end
-    end
   
     private
   
     def set_product
       @product = Product.find(params[:product_id])
-    end
-    def cart_item_params
-      params.require(:cart_item).permit(:quantity)
     end
   end
