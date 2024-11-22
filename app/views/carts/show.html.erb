@@ -2,25 +2,28 @@
   <div class="flex justify-between w-full items-center">  
     <div class="flex flex-col gap-4">
       <h1 class="text-5xl"> Your cart </h1>
+      
       <% if @current_cart.cart_items.any? %>
-        <p class="text-lg"> You have <%= @current_cart.cart_items.count %> items in your cart </p>
+        <% total_items = @current_cart.cart_items.sum(&:quantity) %>
+        <p class="text-lg">You have <%= total_items %> items in your cart</p>
       <% else %>
-        <p class="text-lg"> You don't have any items in your cart yet </p>
+        <p class="text-lg">You don't have any items in your cart yet</p>
       <% end %>
     </div>
 
-    <%= link_to "Checkout Now", checkout_cart_path(@current_cart.secret_id), class: "rounded-lg font-semibold p-4 text-center text-xl bg-yellow-400 hover:bg-yellow-500" %>
+    <%= link_to "Checkout Now", checkout_cart_path(@current_cart.secret_id), 
+        class: "rounded-lg font-semibold p-4 text-center text-xl bg-yellow-400 hover:bg-yellow-500" %>
   </div>
 
   <br/>
   
   <div id="products" class="min-w-full grid md:grid-cols-4 gap-8">
-    <% @current_cart.products.each do |product| %>
+    <% @current_cart.cart_items.each do |cart_item| %>  <!-- Iterating over cart items -->
       <div>
-        <%= render "products/product", product: product %>
+        <%= render "products/product", product: cart_item.product %>
         <br/>
-        <%= link_to "Remove from cart", cart_path(@current_cart.secret_id, product_id: product.id), class: "p-2 rounded-lg bg-indigo-500 text-indigo-100",
-            data: { turbo_method: "delete" } %>
+        <%= link_to "Remove from cart", cart_path(@current_cart.secret_id, product_id: cart_item.product.id), 
+                    class: "p-2 rounded-lg bg-indigo-500 text-indigo-100", data: { turbo_method: "delete" } %>
       </div>
     <% end %>
   </div>

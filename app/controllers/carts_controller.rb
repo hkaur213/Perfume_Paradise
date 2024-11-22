@@ -1,58 +1,98 @@
 class CartsController < ApplicationController
-    before_action :set_product, only: [:create, :destroy]
-    def create
-      @current_cart.cart_items.create(product_id: @product.id)
-    end
-  
-    def show
-    end
-  
-    def checkout
-    end
-  
-    def destroy
-      @cart_item = @current_cart.cart_items.find_by_product_id(@product.id)
-      @cart_item.destroy
-      redirect_to cart_path(@current_cart)
+  before_action :set_product, only: [:create, :destroy]
+  before_action :set_cart_item, only: [:update_quantity, :destroy]
+
+  def create
+    cart_item = @current_cart.cart_items.find_by(product_id: @product.id)
+
+    if cart_item
+      # If the item is already in the cart, increase the quantity
+      cart_item.quantity += 1
+      cart_item.save
+    else
+      # Otherwise, add a new item to the cart
+      @current_cart.cart_items.create(product_id: @product.id, quantity: 1)
     end
 
-    STRIPE_SUPPORTED_COUNTRIES = ["US", "CA", "GB", "AU", "BY", "EC", "GE", "ID", "MX", "OM","RU","RS","VN","TZ"]
-  
-    def stripe_session
-      session = Stripe::Checkout::Session.create({
-        ui_mode: 'embedded',
-        line_items: [{
-            # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-            price_data: {
-              currency: "usd",
-              unit_amount: (@current_cart.products.sum(&:price) * 100).to_i,
-              product_data: {
-                name: @current_cart.products.map(&:name).join(", ")
-              },
-            },
-            quantity: 1,
-          }],
-          shipping_address_collection: {
-            allowed_countries: STRIPE_SUPPORTED_COUNTRIES
-          },
-          mode: 'payment',
-          return_url: success_cart_url(@current_cart.secret_id),
-      })
-  
-      render json: { clientSecret: session.client_secret }
-    end
-  
-    def success
-      if @current_cart.cart_items.any?
-        session[:current_cart_id] = nil
-      end
-      @purchased_cart = Cart.find_by_secret_id(params[:id])
-      redirect_to root_path if !@purchased_cart
-    end
-  
-    private
-  
-    def set_product
-      @product = Product.find(params[:product_id])
+    redirect_to cart_path(@current_cart), notice: 'Item added to cart.'
+  end
+
+  def show
+    # Displays the current cart with its items
+  end
+
+  def checkout
+    # Checkout logic remains unchanged
+  end
+
+  def update_quantity
+    # Update the quantity of a specific item
+    if @cart_item.update(quantity: params[:quantity].to_i)
+      redirect_to cart_path(@current_cart), notice: 'Quantity updated.'
+    else
+      redirect_to cart_path(@current_cart), alert: 'Failed to update quantity.'
     end
   end
+
+  def update_cart_item
+    @cart_item = @current_cart.cart_items.find(params[:id])
+  
+    # Ensure quantity is updated and saved to the database
+    if @cart_item.update(quantity: params[:cart_item][:quantity].to_i)
+      redirect_to cart_path(@current_cart), notice: "Quantity updated successfully."
+    else
+      redirect_to cart_path(@current_cart), alert: "Failed to update quantity."
+    end
+  end  
+
+  def destroy
+    # Remove a specific item from the cart
+    @cart_item.destroy
+    redirect_to cart_path(@current_cart), notice: 'Item removed from cart.'
+  end
+
+  STRIPE_SUPPORTED_COUNTRIES = ["US", "CA", "GB", "AU", "BY", "EC", "GE", "ID", "MX", "OM", "RU", "RS", "VN", "TZ"]
+
+  def stripe_session
+    session = Stripe::Checkout::Session.create({
+      ui_mode: 'embedded',
+      line_items: @current_cart.cart_items.includes(:product).map do |cart_item| {
+        # Provide the exact Price ID (e.g., pr_1234) of the product you want to sell
+        price_data: {
+          currency: "usd",
+          unit_amount: (@current_cart.products.sum(&:price) * 100).to_i,
+          product_data: {
+            name: @current_cart.products.map(&:name).join(", ")
+          },
+        },
+        quantity: cart_item.quantity,
+      }
+    end,
+      shipping_address_collection: {
+        allowed_countries: STRIPE_SUPPORTED_COUNTRIES
+      },
+      mode: 'payment',
+      return_url: success_cart_url(@current_cart.secret_id),
+    })
+
+    render json: { clientSecret: session.client_secret }
+  end
+
+  def success
+    if @current_cart.cart_items.any?
+      session[:current_cart_id] = nil
+    end
+    @purchased_cart = Cart.find_by_secret_id(params[:id])
+    redirect_to root_path unless @purchased_cart
+  end
+
+  private
+
+  def set_product
+    @product = Product.find(params[:id])
+  end
+
+  def set_cart_item
+    @cart_item = @current_cart.cart_items.find(params[:id])
+  end  
+end

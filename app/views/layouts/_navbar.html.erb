@@ -21,8 +21,8 @@
     <% end %>
 
     <!-- Cart Link -->
-    <%= link_to cart_path(@current_cart.secret_id) do %>
+    <%= link_to cart_path(@current_cart.secret_id), data: { turbo_action: 'replace' } do %>
       <%= render "layouts/cart", cart: @current_cart %>
-    <% end %>
+    <% end %>    
   </div>
 </div>

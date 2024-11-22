@@ -1,10 +1,23 @@
 <div id="add-to-cart" class="w-full flex">
-  <% if @current_cart && @current_cart.products.where(id: @product.id).any? %>
-    <div class="rounded-lg font-semibold p-4 text-center text-xl bg-gray-400 hover:bg-gray-500 w-full">
-      Already in Cart
+  <% if @current_cart && @current_cart.cart_items.where(product_id: @product.id).any? %>
+    <% cart_item = @current_cart.cart_items.find_by(product_id: @product.id) %>
+    
+    <!-- If the product is already in the cart, allow quantity update -->
+    <div class="w-full">
+      <div class="rounded-lg font-semibold p-4 text-center text-xl bg-gray-400">
+        Already in Cart
+      </div>
+
+      <%= form_with model: cart_item, url: update_cart_item_cart_path(cart_item), method: :patch, local: true, class: "flex justify-between items-center mt-2" do |form| %>
+        <label for="quantity" class="mr-2">Quantity:</label>
+        <%= form.number_field :quantity, value: cart_item.quantity, min: 1, class: "rounded-lg border-gray-300 w-16" %>
+        <%= form.submit 'Update', class: "ml-2 bg-blue-500 text-white p-2 rounded-lg" %>
+      <% end %>
     </div>
   <% else %>
-    <%= link_to "Add To Cart", carts_path(product_id: @product.id), class: "rounded-lg font-semibold p-4 text-center text-xl bg-gray-400 hover:bg-gray-500 w-full",
+    <!-- If the product is not in the cart, show "Add to Cart" button -->
+    <%= link_to "Add To Cart", carts_path(product_id: @product.id), 
+        class: "rounded-lg font-semibold p-4 text-center text-xl bg-gray-400 hover:bg-gray-500 w-full",
         data: { turbo_method: "post" } %>
   <% end %>
 </div>

@@ -13,11 +13,14 @@ Rails.application.routes.draw do
     end
   end
 
+  # Cart routes
   resources :carts, only: [:create, :show, :destroy] do
-     patch 'update_cart_item/:id', on: :member, to: 'carts#update_cart_item', as: 'update_cart_item'
-    get "checkout", on: :member, to: "carts#checkout"
-    post "stripe_session", on: :member, to: "carts#stripe_session"
-    get "success", on: :member, to: "carts#success"
+    member do
+      patch :update_cart_item  # Updates quantity for a specific cart item
+      get :checkout
+      post :stripe_session
+      get :success
+    end
   end
 
   resource :admin, only: [:show], controller: :admin
