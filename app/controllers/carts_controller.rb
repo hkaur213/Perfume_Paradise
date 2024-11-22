@@ -89,7 +89,10 @@ class CartsController < ApplicationController
   private
 
   def set_product
-    @product = Product.find(params[:id])
+    @product = Product.find(params[:product_id])
+  end
+  def set_cart
+    @current_cart = current_cart
   end
 
   def set_cart_item

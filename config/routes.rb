@@ -19,9 +19,11 @@ Rails.application.routes.draw do
       patch :update_cart_item  # Updates quantity for a specific cart item
       get :checkout
       post :stripe_session
+      post 'add_to_cart', to: 'carts#add_to_cart', as: :add_to_cart
       get :success
     end
   end
+  resources :cart_items, only: [:create, :update, :destroy]
 
   resource :admin, only: [:show], controller: :admin
   
