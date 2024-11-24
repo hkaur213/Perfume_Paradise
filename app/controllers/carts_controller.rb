@@ -71,6 +71,7 @@ class CartsController < ApplicationController
       shipping_address_collection: {
         allowed_countries: STRIPE_SUPPORTED_COUNTRIES
       },
+      automatic_tax: { enabled: true },
       mode: 'payment',
       return_url: success_cart_url(@current_cart.secret_id),
     })
@@ -79,12 +80,19 @@ class CartsController < ApplicationController
   end
 
   def success
-    if @current_cart.cart_items.any?
-      session[:current_cart_id] = nil
-    end
-    @purchased_cart = Cart.find_by_secret_id(params[:id])
-    redirect_to root_path unless @purchased_cart
-  end
+    # Find the purchased cart based on the secret ID
+    @purchased_cart = Cart.find_by(secret_id: params[:id])
+    
+    # Redirect to the root path if the cart is not found
+    redirect_to root_path, alert: "Cart not found." unless @purchased_cart
+  
+    # Fetch the purchased items from the cart
+    @items = @purchased_cart.cart_items.includes(:product)
+  
+    # Calculate total amounts and tax
+    @total_amount = @items.sum { |item| item.quantity * item.product.price }
+    @tax = (@total_amount * 0.05).round(2) # Example tax rate: 5%
+  end  
 
   private
 
