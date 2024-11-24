@@ -2,7 +2,7 @@
   <%= image_tag("cart.png", class: "w-10 object-cover invert") %>
   <% if cart && cart.cart_items.any? %>
     <div class="absolute top-0 -right-1 bg-purple-500 px-1.5 text-sm text-white rounded-lg"> 
-      <%= cart.cart_items.count %>
+      <%= cart.cart_items.sum(:quantity) %> <!-- Total quantity of items -->
     </div>
   <% end %>
 </div>
