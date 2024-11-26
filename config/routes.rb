@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     get "success", on: :member, to: "carts#success"
   end
 
+  resources :carts, only: [:create, :show, :destroy]
+
   resource :admin, only: [:show], controller: :admin
   
   # Health check and PWA files

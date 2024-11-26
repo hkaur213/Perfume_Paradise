@@ -1,8 +1,23 @@
 class CartsController < ApplicationController
     before_action :set_product, only: [:create, :destroy]
     def create
-      @current_cart.cart_items.create(product_id: @product.id)
+      product = Product.find(params[:product_id])  # Get the product being added to the cart
+      @current_cart = Cart.find_by_secret_id(session[:current_cart_id])  # Find the current cart
+    
+      # Check if the product is already in the cart
+      cart_item = @current_cart.cart_items.find_by(product_id: product.id)
+    
+      if cart_item
+        # If the product is already in the cart, increment the quantity
+        cart_item.update(quantity: cart_item.quantity + 1)
+      else
+        # Otherwise, create a new CartItem
+        @current_cart.cart_items.create(product: product, quantity: 1)
+      end
+    
+      redirect_to cart_path(@current_cart.secret_id)
     end
+    
   
     def show
     end

@@ -13,13 +13,16 @@ class ApplicationController < ActionController::Base
   private
   
   def set_current_cart
-    if session[:current_cart_id]
+    if user_signed_in?
+      @current_cart = current_user.cart || Cart.create(user: current_user)
+    elsif session[:current_cart_id]
       @current_cart = Cart.find_by_secret_id(session[:current_cart_id])
     else
       @current_cart = Cart.create
       session[:current_cart_id] = @current_cart.secret_id
     end
   end
+  
 
    # Permit the new fields during sign up and account update
    def configure_permitted_parameters
