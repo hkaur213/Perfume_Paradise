@@ -24,6 +24,32 @@
           <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "w-full rounded-lg bg-gray-50" %>
         </div>
 
+        <!-- Address Fields -->
+        <div class="field mb-4">
+          <%= f.label :address, class: "mb-2 text-lg" %><br />
+          <%= f.text_field :address, class: "w-full rounded-lg bg-gray-50" %>
+        </div>
+
+        <div class="field mb-4">
+          <%= f.label :city, class: "mb-2 text-lg" %><br />
+          <%= f.text_field :city, class: "w-full rounded-lg bg-gray-50" %>
+        </div>
+
+        <div class="field mb-4">
+          <%= f.label :state, class: "mb-2 text-lg" %><br />
+          <%= f.text_field :state, class: "w-full rounded-lg bg-gray-50" %>
+        </div>
+
+        <div class="field mb-4">
+          <%= f.label :province, class: "mb-2 text-lg" %><br />
+          <%= f.text_field :province, class: "w-full rounded-lg bg-gray-50" %>
+        </div>
+
+        <div class="field mb-4">
+          <%= f.label :zip_code, class: "mb-2 text-lg" %><br />
+          <%= f.text_field :zip_code, class: "w-full rounded-lg bg-gray-50" %>
+        </div>
+
         <div class="actions">
           <%= f.submit "Sign up", class: "bg-blue-500 w-full p-2 text-blue-100 rounded-lg cursor-pointer hover:bg-blue-700 hover:text-blue-300" %>
         </div>

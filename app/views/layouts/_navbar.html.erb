@@ -2,7 +2,7 @@
   <div class="max-w-7xl h-full w-full mx-auto flex items-center justify-between px-8">
     <%= link_to root_path, class: "flex items-end gap-4" do %>
       <%= image_tag("perfume store.png", class: "w-10 object-cover") %>
-      <span class="text-2xl text-gray-100"> Perfume Paradise </span>
+      <span class="text-2xl text-gray-100 font-brokenbrush"> Perfume Paradise </span>
     <% end %>
 
     <!-- Navigation Links -->
@@ -11,15 +11,15 @@
       <%= link_to "About", about_path, class: "hover:text-white" %>
       <%= link_to "Products", products_path, class: "hover:text-white" %>
       <%= link_to "Categories", categories_path, class: "hover:text-white" %>
+
+      <% if user_signed_in? %>
+        <%= link_to "Profile", edit_user_registration_path, class: "hover:text-white" %>
+        <%= link_to "Log Out", destroy_user_session_path, method: :delete, class: "hover:text-white" %>
+      <% else %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "hover:text-white" %>
+        <%= link_to "Log In", new_user_session_path, class: "hover:text-white" %>
+      <% end %>
     </nav>
-
-    <!-- Search Form -->
-    <%= form_with url: products_path, method: :get, class: 'flex items-center' do |f| %>
-      <%= f.text_field :search, value: params[:search], placeholder: "Search products", class: 'p-2 rounded-md text-gray-700' %>
-      <%= f.select :category_id, options_for_select(Category.all.map { |c| [c.name, c.id] }, params[:category_id]), include_blank: "All Categories", class: 'ml-2 p-2 rounded-md text-gray-700' %>
-      <%= f.submit 'Search', class: 'ml-2 p-2 bg-blue-500 text-white rounded-md' %>
-    <% end %>
-
     <!-- Cart Link -->
     <%= link_to cart_path(@current_cart.secret_id) do %>
       <%= render "layouts/cart", cart: @current_cart %>
