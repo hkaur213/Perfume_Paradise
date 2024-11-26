@@ -49,30 +49,33 @@ class CartsController < ApplicationController
   
   STRIPE_SUPPORTED_COUNTRIES = ["US", "CA", "GB", "AU", "BY", "EC", "GE", "ID", "MX", "OM","RU","RS","VN","TZ"]
   
-    def stripe_session
-      session = Stripe::Checkout::Session.create({
-        ui_mode: 'embedded',
-        line_items: [{
-            # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-            price_data: {
-              currency: "usd",
-              unit_amount: (@current_cart.products.sum(&:price) * 100).to_i,
-              product_data: {
-                name: @current_cart.products.map(&:name).join(", ")
-              },
-            },
-            quantity: 1,
-          }],
-          shipping_address_collection: {
-            allowed_countries: STRIPE_SUPPORTED_COUNTRIES
+  def stripe_session
+    line_items = @current_cart.cart_items.map do |cart_item|
+      {
+        price_data: {
+          currency: "usd",
+          unit_amount: (cart_item.product.price * 100).to_i,  # Convert price to cents
+          product_data: {
+            name: cart_item.product.name,
           },
-          mode: 'payment',
-          automatic_tax: { enabled: true },
-          return_url: success_cart_url(@current_cart.secret_id),
-      })
-  
-      render json: { clientSecret: session.client_secret }
+        },
+        quantity: cart_item.quantity,  # Set quantity for each product
+      }
     end
+  
+    session = Stripe::Checkout::Session.create({
+      ui_mode: 'embedded',  # Set ui_mode to 'embedded'
+      line_items: line_items,  # Pass an array of line items, one per product
+      shipping_address_collection: {
+        allowed_countries: STRIPE_SUPPORTED_COUNTRIES
+      },
+      mode: 'payment',
+      automatic_tax: { enabled: true },
+      return_url: success_cart_url(@current_cart.secret_id),  # The return URL after the payment
+    })
+  
+    render json: { clientSecret: session.client_secret }
+  end  
   
   def success
     if @current_cart.cart_items.any?
