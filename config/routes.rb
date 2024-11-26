@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :cart_items, only: [:update]
+
   resources :carts, only: [:create, :show, :destroy] do
      patch 'update_cart_item/:id', on: :member, to: 'carts#update_cart_item', as: 'update_cart_item'
     get "checkout", on: :member, to: "carts#checkout"

@@ -1,6 +1,6 @@
 class CartsController < ApplicationController
   before_action :set_product, only: [:create, :destroy]
-  before_action :set_cart_item, only: [:update_cart_item, :destroy]
+  before_action :set_cart_item, only: [:show, :update_cart_item, :destroy]
 
   def create
     cart_item = @current_cart.cart_items.find_by(product_id: @product.id)
@@ -19,28 +19,68 @@ class CartsController < ApplicationController
     # Display the current cart
   end
 
-  def update_cart_item
-    @current_cart_item = @current_cart.cart_items.find_by(id: params[:id])
+   def update_cart_item
+    @cart_item = @current_cart.cart_items.find(params[:id])
 
-    if @current_cart_item.nil?
-      redirect_to cart_path(@current_cart), alert: "Cart item not found."
-      return
-    end
+    # Update the cart item with the new quantity
+    if @cart_item.update(cart_item_params)
+      # Recalculate total items in the cart
+      total_items = @current_cart.cart_items.sum(:quantity)
 
-    new_quantity = params[:cart_item][:quantity].to_i
-    if @current_cart_item.update(quantity: new_quantity)
-      redirect_to cart_path(@current_cart), notice: "Quantity updated successfully."
+      # Optionally, update the cart's total price or other attributes
+      # @current_cart.update(total_price: @current_cart.cart_items.sum(&:total_price))
+
+      redirect_to cart_path(@current_cart.secret_id), notice: "Cart updated successfully"
     else
-      redirect_to cart_path(@current_cart), alert: "Failed to update quantity."
+      render :show, alert: "Failed to update the cart item"
     end
   end
 
   def destroy
-    @cart_item.destroy
-    redirect_to cart_path(@current_cart), notice: 'Item removed from cart.'
+    @cart_item = @current_cart.cart_items.find_by(product_id: params[:product_id])
+  
+    if @cart_item
+      @cart_item.destroy
+      redirect_to cart_path(@current_cart), notice: 'Item removed from cart.'
+    else
+      redirect_to cart_path(@current_cart), alert: 'Item not found in cart.'
+    end
   end
-
-  # Other methods...
+  
+  STRIPE_SUPPORTED_COUNTRIES = ["US", "CA", "GB", "AU", "BY", "EC", "GE", "ID", "MX", "OM","RU","RS","VN","TZ"]
+  
+    def stripe_session
+      session = Stripe::Checkout::Session.create({
+        ui_mode: 'embedded',
+        line_items: [{
+            # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+            price_data: {
+              currency: "usd",
+              unit_amount: (@current_cart.products.sum(&:price) * 100).to_i,
+              product_data: {
+                name: @current_cart.products.map(&:name).join(", ")
+              },
+            },
+            quantity: 1,
+          }],
+          shipping_address_collection: {
+            allowed_countries: STRIPE_SUPPORTED_COUNTRIES
+          },
+          mode: 'payment',
+          automatic_tax: { enabled: true },
+          return_url: success_cart_url(@current_cart.secret_id),
+      })
+  
+      render json: { clientSecret: session.client_secret }
+    end
+  
+  def success
+    if @current_cart.cart_items.any?
+      session[:current_cart_id] = nil
+    end
+    @purchased_cart = Cart.find_by_secret_id(params[:id])
+    redirect_to root_path unless @purchased_cart
+  end
 
   private
 
@@ -50,5 +90,9 @@ class CartsController < ApplicationController
 
   def set_cart_item
     @cart_item = @current_cart.cart_items.find_by(id: params[:id])
+  end
+
+  def cart_item_params
+    params.require(:cart_item).permit(:quantity)
   end
 end
