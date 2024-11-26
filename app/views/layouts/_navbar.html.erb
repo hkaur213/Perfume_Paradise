@@ -21,8 +21,10 @@
       <% end %>
     </nav>
     <!-- Cart Link -->
-    <%= link_to cart_path(@current_cart.secret_id) do %>
-      <%= render "layouts/cart", cart: @current_cart %>
-    <% end %>
+    <% if @current_cart.present? && @current_cart.secret_id.present? %>
+      <%= link_to cart_path(@current_cart.secret_id) do %>
+        <%= render "layouts/cart", cart: @current_cart %>
+      <% end %>
+    <% end %> <!-- Close the if block for the cart -->
   </div>
 </div>
