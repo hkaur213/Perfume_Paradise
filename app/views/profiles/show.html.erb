@@ -1,0 +1,17 @@
+<h1>Welcome, <%= @user.name %></h1>
+
+<h2>Your Past Orders</h2>
+<% if @orders.any? %>
+  <ul>
+    <% @orders.each do |order| %>
+      <li>
+        <h3>Order #<%= order.id %> - <%= order.status.capitalize %></h3>
+        <p><strong>Total:</strong> <%= number_to_currency order.grand_total %></p>
+        <p><strong>Tax:</strong> <%= number_to_currency order.tax_total %></p>
+        <%= link_to 'View Order', orders_show_path(order) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You haven't placed any orders yet.</p>
+<% end %>

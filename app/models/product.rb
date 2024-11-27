@@ -4,6 +4,8 @@ class Product < ApplicationRecord
   belongs_to :category, optional: true
   has_many :cart_items
   attribute :on_sale, :boolean, default: false
+  has_many :order_items
+  has_many :orders, through: :order_items
 
   # Include PgSearch for full-text search
   include PgSearch::Model

@@ -1,10 +1,16 @@
 Rails.application.routes.draw do
+  get "profiles/show"
+  get "orders/index"
+  get "orders/show"
   devise_for :users
   resources :categories
+  resource :profile, only: [:show]
   devise_for :admins
   
   get "/about", to: "home#about", as: "about"
   namespace :admin do
+    get "orders/index"
+    get "orders/show"
     resource :about, only: [:edit, :update], controller: "pages"
   end
 

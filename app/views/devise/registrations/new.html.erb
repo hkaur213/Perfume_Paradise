@@ -41,9 +41,10 @@
         </div>
 
         <div class="field mb-4">
-          <%= f.label :province, class: "mb-2 text-lg" %><br />
-          <%= f.text_field :province, class: "w-full rounded-lg bg-gray-50" %>
+        <%= f.label :province_id, "Province", class: "mb-2 text-lg" %><br />
+        <%= f.collection_select :province_id, Province.all, :id, :name, { prompt: "Select your province" }, class: "w-full rounded-lg bg-gray-50" %>
         </div>
+
 
         <div class="field mb-4">
           <%= f.label :zip_code, class: "mb-2 text-lg" %><br />

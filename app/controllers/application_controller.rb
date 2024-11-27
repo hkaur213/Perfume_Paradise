@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
 
    # Permit the new fields during sign up and account update
    def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:address, :city, :state, :province, :zip_code])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:address, :city, :state, :province, :zip_code])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:address, :city, :state, :province_id, :zip_code])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:address, :city, :state, :province_id, :zip_code])
   end
 end
