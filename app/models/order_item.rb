@@ -9,4 +9,7 @@ class OrderItem < ApplicationRecord
   def calculate_total
     self.total = self.quantity * self.price
   end
+
+  validates :quantity, presence: true, numericality: { greater_than: 0 }
+  validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
 end
