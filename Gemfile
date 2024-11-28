@@ -7,6 +7,8 @@ gem "httparty"
 gem 'kaminari'
 gem 'kaminari-bootstrap'
 gem 'pg_search'
+gem 'dalli'
+gem 'rubocop', require: false
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

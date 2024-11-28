@@ -1,8 +1,8 @@
 class ProfilesController < ApplicationController
-  before_action :authenticate_user! # Ensure the user is logged in if you're using Devise
+  before_action :authenticate_user!
 
   def show
     @user = current_user
-    @orders = @user.orders.includes(:order_items) # Preload associated items to prevent N+1 queries
+    @orders = @user.orders.includes(:order_items).order(created_at: :desc)
   end
 end
